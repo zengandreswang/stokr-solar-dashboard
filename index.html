@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOKR | Tokenised Solar Debt Instrument (€2.0M) — Portal & Compliance Dashboard V4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            margin-top: -7px;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+            border: 2px solid #0f172a;
+            transition: transform 0.15s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 2px;
+        }
+        .radio-label {
+            transition: all 0.2s ease;
+        }
+        .radio-input:checked + .radio-label {
+            background-color: rgba(14, 116, 144, 0.3);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.15);
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.45; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500/30 selection:text-sky-200">
+
+    <!-- Floating Toast Notification -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-md w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- Emergency Global Circuit Breaker Banner -->
+    <div id="globalPauseBanner" class="hidden bg-red-950/90 border-b border-red-500/60 px-4 py-2.5 text-center text-xs sm:text-sm font-medium text-red-200 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex items-center justify-center gap-2">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+            <span class="font-bold uppercase tracking-wider text-red-400">PAUSER_ROLE Circuit Breaker Active:</span>
+            <span>All secondary token transfers &amp; distributions are temporarily halted by STOKR Compliance Officer.</span>
+        </div>
+    </div>
+
+    <!-- Top Institutional Navigation Header -->
+    <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                
+                <!-- Brand & Asset Metadata -->
+                <div class="flex items-start sm:items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 p-0.5 shadow-lg shadow-sky-500/20 shrink-0">
+                        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                            <svg class="w-6 h-6 text-sky-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <path d="M12 2v2"></path><path d="M12 20v2"></path>
+                                <path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path>
+                                <path d="M2 12h2"></path><path d="M20 12h2"></path>
+                                <path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest bg-sky-500/15 text-sky-400 border border-sky-500/30 rounded-md">STOKR Web2 Portal</span>
+                            <span class="px-2 py-0.5 text-[10px] font-mono-code text-slate-300 bg-slate-900 border border-slate-700 rounded-md">UUPS Proxy (Sepolia) ⇄ Liquid Network (Blockstream AMP)</span>
+                            <span class="px-2 py-0.5 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-md">MiFID II Security (Ex-MiCAR Art. 2(4)(a))</span>
+                        </div>
+                        <h1 class="text-lg sm:text-xl font-bold text-white tracking-tight mt-1">
+                            LU-SOLAR-2026 • €2.0M Tokenised C&amp;I Solar Debt Instrument
+                        </h1>
+                        <p class="text-xs text-slate-400">
+                            2.5 MWp Photovoltaic Facility (Luxembourg • 30-Yr Design Life) • Unregulated SV (Limited Recourse) • STOKR Private Credit Registry Locked
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Live On-Chain & AI Telemetry Badges -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div id="headerContractBadge" class="flex items-center gap-2 bg-slate-900/90 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs">
+                        <span id="headerContractDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-slow"></span>
+                        <span class="text-slate-400">Contract:</span>
+                        <span id="headerContractText" class="font-mono-code font-bold text-emerald-400">ACTIVE</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 bg-slate-900/90 border border-sky-500/30 px-3 py-1.5 rounded-lg text-xs">
+                        <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse-slow"></span>
+                        <span class="text-slate-400">Chainlink + Creos:</span>
+                        <span id="headerOracleText" class="font-mono-code font-bold text-sky-400">VERIFIED</span>
+                    </div>
+
+                    <div id="headerAiBadge" class="flex items-center gap-2 bg-slate-900/90 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs">
+                        <span id="headerAiDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span class="text-slate-400">AI Monitor:</span>
+                        <span id="headerAiText" class="font-mono-code font-bold text-emerald-400">NOMINAL (1.34x)</span>
+                    </div>
+
+                    <button onclick="toggleFullscreenDemo()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all" title="Toggle Fullscreen for Video Recording">
+                        <span>🎬 Fullscreen Demo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3-Tab View Switcher -->
+            <div class="mt-4 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div class="flex flex-wrap gap-2" role="tablist">
+                    <button onclick="switchTab('investor')" id="tabBtn-investor" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-500 text-slate-950 shadow-md shadow-sky-500/20">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>1. Investor Portal (Web2 UI)</span>
+                    </button>
+                    <button onclick="switchTab('simulator')" id="tabBtn-simulator" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 hover:text-white">
+                        <svg class="w-4 h-4 text-sky-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        <span>2. Financial Stress-Test Simulator</span>
+                    </button>
+                    <button onclick="switchTab('compliance')" id="tabBtn-compliance" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 hover:text-white relative">
+                        <svg class="w-4 h-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span>3. AI Risk &amp; Compliance Console (Admin)</span>
+                        <span id="complianceAlertBadge" class="hidden ml-1 px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white rounded-full animate-bounce">!</span>
+                    </button>
+                </div>
+                <div class="text-[11px] text-slate-400 flex items-center gap-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-sky-400"></span>
+                    <span>Cognitive Fairness Layer: EVM &amp; Liquid AMP complexity abstracted</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- TAB 1: INVESTOR PORTAL (WEB2 INTERFACE) -->
+        <section id="tabContent-investor" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Deal Overview & Fundraising Progress -->
+                <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Primary Issuance • Luxembourg SV</span>
+                                <span class="px-2 py-0.5 text-[10px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 rounded">STOKR Private Credit Registry: PPA Locked</span>
+                            </div>
+                            <span class="text-xs font-mono-code text-slate-400">Law of 16 July 2019 (&lt;€8.0M Prospectus Exemption)</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white">Luxembourg C&amp;I Solar 5.5% Secured Bullet Bond (2026–2036)</h2>
+                        <p class="text-sm text-slate-400 mt-1">
+                            Direct senior secured claim on electricity revenues generated by a 2.5 MWp Commercial &amp; Industrial (C&amp;I) solar installation in Luxembourg (30-year physical design life), anchored by a 10-year €75/MWh Grid Injection PPA floor (with €95–€125/MWh direct C&amp;I corporate PPA upside) and 100.01% Year-10 principal coverage (€2,000,230 backing).
+                        </p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3">
+                                <div class="text-[11px] text-slate-400 uppercase font-semibold">Annual Coupon</div>
+                                <div class="text-xl font-black text-emerald-400 mt-0.5">5.50% <span class="text-xs font-normal text-slate-400">Fixed</span></div>
+                            </div>
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3">
+                                <div class="text-[11px] text-slate-400 uppercase font-semibold">Maturity &amp; Type</div>
+                                <div class="text-xl font-black text-white mt-0.5">10 Yrs <span class="text-xs font-normal text-sky-400">Bullet</span></div>
+                            </div>
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3">
+                                <div class="text-[11px] text-slate-400 uppercase font-semibold">Baseline DSCR</div>
+                                <div class="text-xl font-black text-emerald-400 mt-0.5">1.34x <span class="text-xs font-normal text-slate-400">P50</span></div>
+                            </div>
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3">
+                                <div class="text-[11px] text-slate-400 uppercase font-semibold">Min. Ticket</div>
+                                <div class="text-xl font-black text-sky-400 mt-0.5">€500 <span class="text-xs font-normal text-slate-400">1 Token</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-5 border-t border-slate-800">
+                        <div class="flex justify-between items-end mb-2">
+                            <div>
+                                <span class="text-xs text-slate-400">Total Subscribed Capital:</span>
+                                <span id="subscribedAmountText" class="text-lg font-bold text-white ml-1">€1,645,000</span>
+                                <span class="text-xs text-slate-500">/ €2,000,000 (4,000 Tokens)</span>
+                            </div>
+                            <span id="subscribedPctText" class="text-sm font-mono-code font-bold text-sky-400">82.25% Funded</span>
+                        </div>
+                        <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                            <div id="subscribedProgressBar" class="h-full bg-gradient-to-r from-sky-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 82.25%"></div>
+                        </div>
+
+                        <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                            <div class="text-xs text-slate-400">
+                                <span class="text-emerald-400 font-semibold">✓ KYC Whitelisted:</span> Onboarded via SEPA / Euro wallet; PPA receivables locked in STOKR Private Credit Registry against double-pledging.
+                            </div>
+                            <button onclick="subscribeBondTicket()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-sky-500/20 transition-all shrink-0">
+                                + Subscribe €500 (1 SOLAR-26 Token)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investor's Personal Whitelisted Position -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">My Investor Account</span>
+                            <span id="investorKycBadge" class="px-2.5 py-0.5 text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-full">
+                                KYC Whitelisted
+                            </span>
+                        </div>
+
+                        <div class="mt-4 bg-slate-950 border border-slate-800/90 rounded-xl p-3.5">
+                            <div class="text-[11px] text-slate-400 flex justify-between">
+                                <span>Custody / On-Chain Address (Abstracted)</span>
+                                <span id="walletStatusTag" class="text-emerald-400 font-semibold">Active</span>
+                            </div>
+                            <div id="investorWalletAddr" class="font-mono-code text-sm font-bold text-slate-200 mt-1">
+                                0x71C8...9A2B (Retail #842)
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5">
+                                <div class="text-xs text-slate-400">My Principal</div>
+                                <div id="myPrincipalDisplay" class="text-2xl font-black text-white mt-1">€2,500</div>
+                                <div id="myTokensDisplay" class="text-[11px] text-sky-400 font-medium mt-0.5">5 SOLAR-26 Tokens</div>
+                            </div>
+                            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5">
+                                <div class="text-xs text-slate-400">Annual Coupon (5.5%)</div>
+                                <div id="myCouponDisplay" class="text-2xl font-black text-emerald-400 mt-1">€137.50</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Paid via Verified PPA Pool</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-4 border-t border-slate-800">
+                        <div class="flex items-start gap-2.5">
+                            <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                <strong class="text-slate-200">Zero Permanent Loss Guarantee:</strong> Lost your wallet key or suspect unauthorized access? STOKR Compliance can freeze compromised tokens and reissue them to your verified backup wallet.
+                            </p>
+                        </div>
+                        <button onclick="reportCompromisedWallet()" id="reportLostKeyBtn" class="mt-3 w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold transition-all flex items-center justify-center gap-2">
+                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <span>Report Compromised Wallet / Request Token Recovery</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Row: Plain-Language Investor Factsheet -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-base sm:text-lg font-bold text-white">Plain-Language Investor Factsheet</h3>
+                            <p class="text-xs text-slate-400">Clear disclosure of rights, dual-mode Luxembourg PPA pricing, 30-year residual NPV coverage, and legal boundaries (Information Note Summary)</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 self-start sm:self-auto">
+                        Cognitive Fairness Compliant
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-5">
+                    <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4">
+                        <div class="text-xs font-bold uppercase text-sky-400 tracking-wider">1. The Asset</div>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            A <strong class="text-white">€2.0M secured debt instrument</strong> financing a 2.5 MWp Commercial &amp; Industrial (C&amp;I) solar installation in Luxembourg (€800/kWp CapEx benchmark; 30-year design life).
+                        </p>
+                    </div>
+                    <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4">
+                        <div class="text-xs font-bold uppercase text-emerald-400 tracking-wider">2. What You Own</div>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            Digital debt tokens representing a <strong class="text-white">direct claim on PPA electricity revenue</strong> (locked in STOKR Private Credit Registry). Excluded from MiCAR under Art. 2(4)(a).
+                        </p>
+                    </div>
+                    <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4">
+                        <div class="text-xs font-bold uppercase text-sky-400 tracking-wider">3. Your Returns (Bullet)</div>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            Fixed <strong class="text-white">5.5% annual interest</strong> (€110,000/yr) over 10 years, modeled on a conservative <strong class="text-white">€75/MWh</strong> grid PPA floor (with €95–€125/MWh direct C&amp;I corporate PPA upside).
+                        </p>
+                    </div>
+                    <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4">
+                        <div class="text-xs font-bold uppercase text-indigo-400 tracking-wider">4. Principal Repayment</div>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            An <strong class="text-white">interest-only bullet bond</strong>. Your €500/token principal is repaid in full at <strong class="text-white">Year 10</strong> via refinancing or secondary buyout backed by Years 11–30 cash flows (<strong class="text-emerald-400">€1.63M residual NPV + €375k reserve = €2.00M+ / 100.01% coverage</strong>).
+                        </p>
+                    </div>
+                    <div class="bg-slate-950/70 border border-slate-800/90 rounded-xl p-4">
+                        <div class="text-xs font-bold uppercase text-amber-400 tracking-wider">5. Risks &amp; Recourse</div>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            Issued via a segregated <strong class="text-white">Securitisation Vehicle (Limited Recourse)</strong>. Even in a -20% P90 weather shock, OCF covers 100% of interest (1.00x DSCR). Tokenisation does not guarantee secondary liquidity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Live Chainlink Oracle Telemetry -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-sky-400">On-Chain Revenue Anchoring</span>
+                            <span class="font-mono-code text-[11px] text-slate-400">AggregatorV3Interface</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">IoT Smart Meter → Chainlink Oracle</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                            Fetches daily MWh output from physical Smarty IoT meters. Following BIS <em>Project Genesis</em> standards, on-chain feeds undergo quarterly reconciliation against <strong class="text-slate-200">Creos Luxembourg S.A.</strong> &amp; <strong class="text-slate-200">ILR</strong> grid billing statements.
+                        </p>
+
+                        <div class="mt-4 space-y-2">
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 flex justify-between items-center">
+                                <span class="text-xs text-slate-400">Latest Oracle Round ID</span>
+                                <span id="oracleRoundId" class="font-mono-code text-xs font-bold text-sky-400">#10492</span>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 flex justify-between items-center">
+                                <span class="text-xs text-slate-400">Today's Verified Output</span>
+                                <span id="oracleDailyMwh" class="font-mono-code text-sm font-bold text-white">7.15 MWh</span>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 flex justify-between items-center">
+                                <span class="text-xs text-slate-400">Daily PPA Revenue (@ €75/MWh)</span>
+                                <span id="oracleDailyRev" class="font-mono-code text-sm font-bold text-emerald-400">+€536.25</span>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 flex justify-between items-center">
+                                <span class="text-xs text-slate-400">YTD Accrued OCF Pool</span>
+                                <span id="oracleYtdPool" class="font-mono-code text-sm font-bold text-emerald-400">€118,420 / €110,000 req.</span>
+                            </div>
+                            <div class="bg-slate-950 border border-emerald-500/30 rounded-xl p-2.5 flex justify-between items-center">
+                                <span class="text-xs text-slate-400">Creos &amp; ILR Grid Reconciliation</span>
+                                <span id="oracleCreosSync" class="font-mono-code text-[11px] font-bold text-emerald-400">✓ VERIFIED (BIS GENESIS STD)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="simulateOracleFeed()" class="mt-4 w-full py-2.5 px-4 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 font-semibold text-xs transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        <span>Simulate Daily IoT Meter → Oracle &amp; Creos Sync</span>
+                    </button>
+                </div>
+
+                <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-white">Verified Daily Solar Generation (MWh) &amp; PPA Revenue Feed</h3>
+                            <p class="text-xs text-slate-400">On-chain Chainlink attestation cross-checked against Creos Luxembourg S.A. grid settlement statements</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-slate-950 text-emerald-400 border border-slate-800">
+                            Baseline Grid PPA Floor: €75.00 / MWh
+                        </span>
+                    </div>
+                    <div class="flex-grow relative w-full h-[260px]">
+                        <canvas id="oracleTelemetryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: FINANCIAL STRESS-TEST SIMULATOR -->
+        <section id="tabContent-simulator" class="hidden space-y-6">
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Interactive Stress-Testing Engine (Aligned with Proposal &amp; Appendix V4 • 30-Yr Solar Lifecycle)</span>
+                        <h2 class="text-lg font-bold text-white mt-0.5">Structural Pivot, Weather Stress, Dual-Mode PPA &amp; Year-10 Refinancing Proof</h2>
+                        <p class="text-xs text-slate-400">Click any preset below to demonstrate the 10-Year Bullet Bond structural pivot, P90 weather resilience, Luxembourg Grid PPA (€75/MWh) vs. Direct C&amp;I Corporate PPA (€95/MWh), and 100.01% Year-10 principal coverage (€2,000,230 over a 30-year design life).</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        <button onclick="applySimulatorPreset('baseline')" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-all">
+                            1. Baseline P50 Grid PPA (€75 → 1.34x Healthy | €2.00M+ Yr-10 Backing)
+                        </button>
+                        <button onclick="applySimulatorPreset('amortizingFlaw')" class="px-3 py-2 rounded-xl text-xs font-bold bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 transition-all">
+                            2. Structural Flaw: 10-Yr Amortising (0.55x Default)
+                        </button>
+                        <button onclick="applySimulatorPreset('p90Downside')" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition-all">
+                            3. Downside P90 Weather Shock (1.00x Breakeven)
+                        </button>
+                        <button onclick="applySimulatorPreset('ciDirectPpa')" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 transition-all">
+                            4. Direct C&amp;I Corporate PPA (€95 → 1.80x Strong)
+                        </button>
+                        <button onclick="applySimulatorPreset('ppnSweep')" class="px-3 py-2 rounded-xl text-xs font-bold bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 transition-all">
+                            5. Profit-Participating Note (25.6 Yrs Lockup)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Annual Operating Cash Flow (OCF)</span>
+                        <svg class="w-5 h-5 text-sky-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </div>
+                    <div id="ocfValDisplay" class="mt-3 text-3xl font-black text-white">€147,500</div>
+                    <div id="ocfFormulaSub" class="mt-2 text-xs text-slate-400 font-medium">Gross Rev (€187,500) − Fixed OpEx (€40,000)</div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Annual Debt Service</span>
+                        <svg class="w-5 h-5 text-slate-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>
+                    </div>
+                    <div id="debtValDisplay" class="mt-3 text-3xl font-black text-white">€110,000</div>
+                    <div id="debtSubtitle" class="mt-2 text-xs text-slate-400 font-medium">Annual Interest Only (5.5% on €2.0M)</div>
+                </div>
+
+                <div id="metricCard" class="bg-slate-900 border border-emerald-500/40 rounded-2xl p-5 shadow-lg transition-colors duration-300">
+                    <div class="flex justify-between items-start">
+                        <span id="metricTitle" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Debt Service Coverage (DSCR)</span>
+                        <svg class="w-5 h-5 text-emerald-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <div id="metricValDisplay" class="mt-3 text-3xl font-black text-emerald-400">1.34x</div>
+                    <div id="metricSubtitle" class="mt-2 text-xs font-semibold text-emerald-400/90">HEALTHY: Strong Institutional Coverage (&gt;1.20x)</div>
+                </div>
+
+                <div id="npvCard" class="bg-slate-900 border border-sky-500/40 rounded-2xl p-5 shadow-lg transition-colors duration-300">
+                    <div class="flex justify-between items-start">
+                        <span id="npvCardTitle" class="text-xs font-bold text-sky-400 uppercase tracking-wider">Yr-10 Principal Backing (30-Yr Life)</span>
+                        <svg class="w-5 h-5 text-sky-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <div id="npvValDisplay" class="mt-3 text-3xl font-black text-emerald-400">€2,000,230</div>
+                    <div id="npvSubtitle" class="mt-2 text-xs font-semibold text-slate-300">€1,625,230 NPV (Yrs 11–30) + €375k Cash (100.01%)</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div class="lg:col-span-1 space-y-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
+                    <div class="space-y-2.5">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Bond Structure</label>
+                        <div class="flex flex-col space-y-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="structure" value="bullet" class="hidden radio-input" checked onchange="updateFinancialSimulator()">
+                                <div class="radio-label flex items-center justify-between p-3 border border-slate-700 rounded-xl text-slate-300 hover:bg-slate-800/70">
+                                    <span class="text-xs font-semibold">Bullet Bond (Interest Only)</span>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Selected</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="structure" value="amortizing" class="hidden radio-input" onchange="updateFinancialSimulator()">
+                                <div class="radio-label flex items-center justify-between p-3 border border-slate-700 rounded-xl text-slate-300 hover:bg-slate-800/70">
+                                    <span class="text-xs font-semibold">Fully Amortizing (10-Yr P&amp;I)</span>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-300">0.55x Default</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="structure" value="ppn" class="hidden radio-input" onchange="updateFinancialSimulator()">
+                                <div class="radio-label flex items-center justify-between p-3 border border-slate-700 rounded-xl text-slate-300 hover:bg-slate-800/70">
+                                    <span class="text-xs font-semibold">Profit-Participating (Sweep)</span>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300">25.6 Yrs</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-800" />
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-end">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Annual Solar Yield</label>
+                            <span id="yieldLabel" class="text-xs font-mono-code font-bold text-sky-400 bg-slate-950 border border-slate-800 px-2.5 py-1 rounded-md">2500 MWh</span>
+                        </div>
+                        <input type="range" id="yieldInput" min="2000" max="2500" step="50" value="2500" oninput="updateFinancialSimulator()">
+                        <div class="flex justify-between text-[11px] text-slate-500 font-medium">
+                            <span>P90 Stress (2,000)</span>
+                            <span>P50 Baseline (2,500)</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-end">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">PPA Tariff Price</label>
+                            <span id="ppaLabel" class="text-xs font-mono-code font-bold text-emerald-400 bg-slate-950 border border-slate-800 px-2.5 py-1 rounded-md">€75 / MWh</span>
+                        </div>
+                        <input type="range" id="ppaInput" min="40" max="150" step="1" value="75" oninput="updateFinancialSimulator()">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-medium">
+                            <span>€40 Merch.</span>
+                            <span>€75 Grid Floor</span>
+                            <span>€95–€125 C&amp;I PPA</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-end">
+                            <label id="interestTitle" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Coupon Interest Rate</label>
+                            <span id="interestLabel" class="text-xs font-mono-code font-bold text-white bg-slate-950 border border-slate-800 px-2.5 py-1 rounded-md">5.5%</span>
+                        </div>
+                        <input type="range" id="interestInput" min="3.0" max="9.0" step="0.1" value="5.5" oninput="updateFinancialSimulator()">
+                        <div class="flex justify-between text-[11px] text-slate-500 font-medium">
+                            <span>3.0%</span>
+                            <span>5.5% Base</span>
+                            <span>9.0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 id="chartTitle" class="text-base sm:text-lg font-bold text-white">Cash Flow vs Debt Service Coverage Ratio (10-Yr Horizon)</h3>
+                            <p id="chartDynamicTakeaway" class="text-xs text-slate-400 mt-0.5">
+                                Bullet structure maintains a 1.34x DSCR buffer (+€37.5k/yr surplus) and 100.01% Year-10 principal coverage (€1,625,230 residual NPV over Yrs 11–30 + €375,000 cash reserve = €2,000,230).
+                            </p>
+                        </div>
+                        <span class="text-[11px] font-mono-code text-slate-400 bg-slate-950 px-3 py-1 rounded-lg border border-slate-800">
+                            CapEx: €2.0M • OpEx: €40k/yr • 30-Yr Design Life
+                        </span>
+                    </div>
+                    <div class="relative w-full h-[340px]">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] text-slate-400">
+                        <div><strong class="text-slate-300">CapEx &amp; OpEx Benchmark:</strong> Fraunhofer ISE — €800/kWp CapEx (€2.0M), €16/kWp OpEx (€40k/yr).</div>
+                        <div><strong class="text-slate-300">Solar Yield Benchmark:</strong> EU JRC PVGIS Southern Luxembourg (35° tilt, PR 79.2% → 1,000 kWh/kWp).</div>
+                        <div><strong class="text-slate-300">Dual PPA Regimes (ILR &amp; Pexapark):</strong> €75/MWh Grid Floor vs. €95–€125/MWh Direct C&amp;I Corporate PPA.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantitative Proof of Year-10 Refinancing & Residual Asset Coverage (30-Yr Lifecycle) -->
+            <div class="bg-slate-900/95 border border-emerald-500/30 rounded-2xl p-5 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                        <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-400">
+                            Quantitative Proof of Year-10 Refinancing &amp; Residual Asset Coverage (€2.0M Principal • 30-Year Design Life)
+                        </h3>
+                    </div>
+                    <span class="font-mono-code text-[11px] text-slate-400">Appendix V4 Section 3.1 Verification</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 text-xs">
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+                        <div class="text-[11px] font-bold uppercase text-sky-400">1. Post-Maturity Lifespan</div>
+                        <div class="text-lg font-black text-white mt-1">20 Remaining Yrs <span class="text-xs font-normal text-slate-400">(Yrs 11–30)</span></div>
+                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                            30-year commercial PV design life (&gt;92% nameplate output at Year 10; 0.5%/yr degradation offset by 1.5%–2.0%/yr CPI PPA escalation).
+                        </p>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+                        <div class="text-[11px] font-bold uppercase text-emerald-400">2. Residual Plant NPV (Yr 10)</div>
+                        <div class="text-lg font-black text-emerald-400 mt-1">€1,625,230 <span class="text-xs font-normal text-slate-400">@ 6.50% WACC</span></div>
+                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                            Discounting €147,500/yr real steady-state OCF over Years 11–30 at 6.50% WACC (or <strong class="text-slate-200">€1,762,681</strong> at the 5.50% bond coupon rate).
+                        </p>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+                        <div class="text-[11px] font-bold uppercase text-indigo-400">3. 10-Yr Cash Reserve Buffer</div>
+                        <div class="text-lg font-black text-white mt-1">€375,000 <span class="text-xs font-normal text-indigo-300">(€429,895 @ 3%)</span></div>
+                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                            Accumulated DSRA &amp; sinking fund surpluses (+€37,500/yr × 10 yrs at 0% interest, or €429,895 compounded at 3.0% p.a. money-market yield).
+                        </p>
+                    </div>
+                    <div class="bg-emerald-950/25 border border-emerald-500/40 rounded-xl p-3.5">
+                        <div class="text-[11px] font-bold uppercase text-emerald-300">4. Total Year-10 Backing</div>
+                        <div class="text-lg font-black text-emerald-400 mt-1">€2,000,230 <span class="text-xs font-bold text-emerald-300">(100.01%)</span></div>
+                        <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                            Full €2.0M principal coverage (+€230 net surplus) at 0% DSRA interest, scaling to <strong class="text-white">€2,055,125 – €2,192,577 (102.8%–109.6%)</strong> with DSRA yield.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: AI RISK & COMPLIANCE CONSOLE -->
+        <section id="tabContent-compliance" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 rounded-md">
+                                Off-Chain AI Risk Management
+                            </span>
+                            <span class="font-mono-code text-xs text-slate-400">Isolation Forest</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">AI Predictive Maintenance</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                            While financial distribution uses deterministic smart contracts, an unsupervised <strong class="text-slate-200">Isolation Forest</strong> model ingests real-time IoT plane-of-array irradiance (H<sub>poa</sub>) and string inverter outputs to prevent hardware faults from breaching the <strong class="text-amber-300">1.20x DSCR institutional covenant</strong>.
+                        </p>
+
+                        <div id="aiAlertBox" class="mt-4 bg-emerald-950/30 border border-emerald-500/30 rounded-xl p-4 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span id="aiAlertTitle" class="text-xs font-bold uppercase text-emerald-400">All 5 Inverter Strings Nominal</span>
+                                <span id="aiAnomalyScore" class="font-mono-code text-xs font-bold text-emerald-300">Score: 0.12</span>
+                            </div>
+                            <p id="aiAlertDesc" class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                                Plant Performance Ratio (PR) is steady at <strong class="text-white">79.2%</strong>. Projected annual yield: 2,500 MWh (<strong class="text-emerald-400">€147,500 OCF • 1.34x DSCR</strong>).
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 space-y-2.5">
+                        <button onclick="injectAiAnomaly()" id="injectAnomalyBtn" class="w-full py-2.5 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-semibold text-xs transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            <span>Simulate Inverter #3 Fault (-300 MWh / 1.14x DSCR Breach)</span>
+                        </button>
+                        <button onclick="triageAiAnomaly()" id="triageAnomalyBtn" class="hidden w-full py-2.5 px-4 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-400 font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>Human-in-the-Loop: 48h O&amp;M Triage (+€20.6k Saved → 1.32x DSCR)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-white">Multi-Dimensional IoT Telemetry: Inverter Performance Ratio (PR %)</h3>
+                            <p class="text-xs text-slate-400">Isolation Forest boundary threshold: PR &lt; 72.0% under standard 800 W/m² irradiance flags hardware anomaly (Figure E.1B)</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-slate-950 text-indigo-300 border border-slate-800">
+                            Model: sklearn.ensemble.IsolationForest
+                        </span>
+                    </div>
+                    <div class="flex-grow relative w-full h-[230px]">
+                        <canvas id="aiIsolationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Smart Contract Governance -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 text-[10px] font-mono-code font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30 rounded">COMPLIANCE_ROLE</span>
+                            <span class="text-xs text-slate-400">Phase 3 Integration</span>
+                        </div>
+                        <h3 class="text-base font-bold text-white">Off-Chain KYC → On-Chain Whitelist</h3>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Approving retail KYC automatically calls <code class="text-sky-300 font-mono-code">whitelistAddress()</code> on the UUPS proxy / Blockstream AMP register.
+                        </p>
+
+                        <div class="mt-4 space-y-2.5" id="kycQueueList">
+                            <div id="kycRow-1" class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-bold text-white">Marc Schmit (Retail • LU)</div>
+                                    <div class="text-[11px] font-mono-code text-slate-400">0x4B2e...881F • Ticket: €1,500</div>
+                                </div>
+                                <button onclick="approveKycInvestor(1, '0x4B2e...881F', 1500)" class="px-3 py-1.5 rounded-lg bg-sky-500/20 hover:bg-sky-500 text-sky-300 hover:text-slate-950 text-xs font-bold border border-sky-500/30 transition-all">
+                                    Approve &amp; Whitelist
+                                </button>
+                            </div>
+                            <div id="kycRow-2" class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-bold text-white">Claire Weber (Retail • BE)</div>
+                                    <div class="text-[11px] font-mono-code text-slate-400">0x9C1a...304D • Ticket: €500</div>
+                                </div>
+                                <button onclick="approveKycInvestor(2, '0x9C1a...304D', 500)" class="px-3 py-1.5 rounded-lg bg-sky-500/20 hover:bg-sky-500 text-sky-300 hover:text-slate-950 text-xs font-bold border border-sky-500/30 transition-all">
+                                    Approve &amp; Whitelist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex justify-between">
+                        <span>Total Whitelisted Addresses:</span>
+                        <span id="totalWhitelistedCount" class="font-mono-code font-bold text-emerald-400">842 Verified</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 text-[10px] font-mono-code font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded">COMPLIANCE_ROLE</span>
+                            <span id="recoveryTicketBadge" class="text-[11px] text-amber-400 font-semibold">1 Recovery Ticket</span>
+                        </div>
+                        <h3 class="text-base font-bold text-white">Wallet Recovery (Freeze, Wipe &amp; Reissue)</h3>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Eliminates irreversible blockchain loss due to hacks or lost private keys upon verified investor identity or court order.
+                        </p>
+
+                        <div class="mt-4 bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Compromised Wallet:</span>
+                                <span class="font-mono-code text-red-400 font-semibold">0x71C8...9A2B</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Verified New Wallet:</span>
+                                <span class="font-mono-code text-emerald-400 font-semibold">0x99E4...4F1A</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Holdings to Reissue:</span>
+                                <span id="reissueAmountText" class="font-mono-code text-white font-bold">5 SOLAR-26 (€2,500)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="executeFreezeWipeReissue()" id="executeRecoveryBtn" class="mt-4 w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all">
+                        Execute Atomic Freeze → Wipe → Reissue
+                    </button>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 text-[10px] font-mono-code font-bold bg-red-500/15 text-red-400 border border-red-500/30 rounded">PAUSER_ROLE</span>
+                            <span class="text-xs text-slate-400">Circuit Breaker</span>
+                        </div>
+                        <h3 class="text-base font-bold text-white">Emergency Secondary Market Pause</h3>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Acts as an institutional circuit breaker to halt all token transfers during a severe Oracle malfunction or CSSF regulatory inquiry.
+                        </p>
+
+                        <div class="mt-4 bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-white">UUPS / Liquid AMP Transfer State</div>
+                                <div id="pauseStateSubtext" class="text-[11px] text-emerald-400 mt-0.5">Normal Operation (Transfers Enabled)</div>
+                            </div>
+                            <span id="pauseStatePill" class="px-2.5 py-1 rounded-md font-mono-code text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                UNPAUSED
+                            </span>
+                        </div>
+                    </div>
+
+                    <button onclick="toggleEmergencyPause()" id="pauseToggleBtn" class="mt-4 w-full py-2.5 px-4 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/40 font-bold text-xs transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                        <span>Trigger Emergency Circuit Breaker (pause())</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live On-Chain UUPS Contract Audit Log -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <h4 class="font-mono-code text-xs font-bold uppercase tracking-wider text-slate-300">
+                            Multi-Chain Smart Contract Audit &amp; Event Terminal (EVM Sepolia ⇄ Liquid Blockstream AMP)
+                        </h4>
+                    </div>
+                    <span class="font-mono-code text-[11px] text-slate-500">Contract: SolarDebtTokenUUPS.sol</span>
+                </div>
+                <div id="auditTerminal" class="font-mono-code text-xs space-y-2 max-h-40 overflow-y-auto pr-2">
+                    <div class="text-slate-400"><span class="text-slate-600">[10:15:02]</span> <span class="text-sky-400">ProxyInitialized</span> — UUPS upgradeable proxy deployed at <span class="text-slate-200">0x8F4a...3E9c</span> with state-machine mapping to <span class="text-slate-200">Liquid Network (Blockstream AMP)</span>.</div>
+                    <div class="text-slate-400"><span class="text-slate-600">[10:16:19]</span> <span class="text-indigo-400">PrivateCreditRegistered</span> — 10-year PPA receivables locked in <span class="text-slate-200">STOKR Private Credit Registry</span> against double-pledging.</div>
+                    <div class="text-slate-400"><span class="text-slate-600">[10:18:40]</span> <span class="text-emerald-400">OracleDataUpdated</span> — Chainlink <span class="text-slate-200">AggregatorV3Interface</span> round #10492 synced: <span class="text-emerald-300">7.15 MWh</span> (+€536.25 PPA revenue; reconciled vs. <span class="text-slate-200">Creos Luxembourg S.A.</span> &amp; <span class="text-slate-200">ILR</span>).</div>
+                    <div class="text-slate-400"><span class="text-slate-600">[10:22:15]</span> <span class="text-indigo-400">IsolationForestCheck</span> — Off-chain AI telemetry verified 5/5 inverter strings nominal (PR: 79.2%, DSCR: 1.34x).</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+            <div>Best Case Study Competition 2026 • The LHoFT • Target Organization: <strong class="text-slate-400">STOKR</strong> (Benchmarked vs. €3.0M Ratekau Solar Bond, BNP Paribas/EDF &amp; STOKR SV)</div>
+            <div>Assumptions: €2.0M CapEx • €40k OpEx • €75/MWh Grid Floor • 2,500 MWh P50 • 5.5% 10-Yr Bullet • 30-Yr Design Life (€1,625,230 Yr-10 NPV + €375k Cash = €2,000,230 / 100.01% Coverage)</div>
+        </div>
+    </footer>
+
+    <script>
+        const PRINCIPAL = 2000000;
+        const OPEX = 40000;
+        const WACC = 0.065;
+        const REMAINING_YEARS_AT_YR10 = 20; // 30-year total solar design life -> Years 11-30 remaining at Year 10
+        const PV_FACTOR_20YR_65 = (1 - Math.pow(1 + WACC, -REMAINING_YEARS_AT_YR10)) / WACC; // 11.01850725
+
+        let subscribedCapital = 1645000;
+        let myTokens = 5;
+        let whitelistedCount = 842;
+        let oracleRound = 10492;
+        let ytdOcfPool = 118420;
+        let isContractPaused = false;
+        let walletRecovered = false;
+
+        let financialChart = null;
+        let oracleChart = null;
+        let aiChart = null;
+
+        const formatCurrency = (val) => '€' + Math.round(val).toLocaleString('en-US');
+
+        function toggleFullscreenDemo() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {
+                    showToast('Fullscreen Mode', 'Press F11 on your keyboard to enter fullscreen video recording mode.', 'info');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const colors = {
+                info: 'border-sky-500/50 bg-slate-900/95 text-sky-300',
+                success: 'border-emerald-500/50 bg-slate-900/95 text-emerald-300',
+                warning: 'border-amber-500/50 bg-slate-900/95 text-amber-300',
+                danger: 'border-red-500/50 bg-slate-900/95 text-red-300'
+            };
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto border ${colors[type] || colors.info} rounded-xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0 opacity-100`;
+            toast.innerHTML = `
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold uppercase tracking-wider">${title}</div>
+                        <div class="text-xs text-slate-300 mt-1 leading-relaxed">${message}</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-slate-500 hover:text-white text-xs font-bold">✕</button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                if (toast && toast.parentElement) {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4500);
+        }
+
+        function appendAuditLog(eventTag, colorClass, description) {
+            const terminal = document.getElementById('auditTerminal');
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            const txHash = '0x' + Math.random().toString(16).substring(2, 6) + '...' + Math.random().toString(16).substring(2, 6);
+            const row = document.createElement('div');
+            row.innerHTML = `<span class="text-slate-600">[${timeStr}]</span> <span class="${colorClass} font-bold">${eventTag}</span> — ${description} <span class="text-slate-500">(tx: ${txHash})</span>`;
+            row.className = 'text-slate-300';
+            terminal.prepend(row);
+        }
+
+        function switchTab(tabName) {
+            const tabs = ['investor', 'simulator', 'compliance'];
+            tabs.forEach(t => {
+                const section = document.getElementById(`tabContent-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (t === tabName) {
+                    section.classList.remove('hidden');
+                    btn.className = 'tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-500 text-slate-950 shadow-md shadow-sky-500/20';
+                } else {
+                    section.classList.add('hidden');
+                    btn.className = 'tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 hover:text-white relative';
+                }
+            });
+
+            if (tabName === 'compliance') {
+                document.getElementById('complianceAlertBadge').classList.add('hidden');
+            }
+
+            setTimeout(() => {
+                if (financialChart) financialChart.resize();
+                if (oracleChart) oracleChart.resize();
+                if (aiChart) aiChart.resize();
+            }, 50);
+        }
+
+        function subscribeBondTicket() {
+            if (isContractPaused) {
+                showToast('PAUSER_ROLE Circuit Breaker Active', 'Subscriptions and transfers are currently paused by STOKR Compliance.', 'danger');
+                return;
+            }
+            if (subscribedCapital + 500 > PRINCIPAL) {
+                showToast('Issuance Fully Subscribed', 'The €2.0M hard cap has been reached.', 'warning');
+                return;
+            }
+            subscribedCapital += 500;
+            myTokens += 1;
+            const myPrincipal = myTokens * 500;
+            const myCoupon = myPrincipal * 0.055;
+            const pct = ((subscribedCapital / PRINCIPAL) * 100).toFixed(2);
+
+            document.getElementById('subscribedAmountText').innerText = formatCurrency(subscribedCapital);
+            document.getElementById('subscribedPctText').innerText = `${pct}% Funded`;
+            document.getElementById('subscribedProgressBar').style.width = `${pct}%`;
+
+            document.getElementById('myPrincipalDisplay').innerText = formatCurrency(myPrincipal);
+            document.getElementById('myTokensDisplay').innerText = `${myTokens} SOLAR-26 Tokens`;
+            document.getElementById('myCouponDisplay').innerText = `€${myCoupon.toFixed(2)}`;
+            document.getElementById('reissueAmountText').innerText = `${myTokens} SOLAR-26 (${formatCurrency(myPrincipal)})`;
+
+            appendAuditLog('TokensSubscribed', 'text-emerald-400', `Whitelisted retail investor minted 1 SOLAR-26 token (€500). Total holdings: ${myTokens} tokens.`);
+            showToast('Subscription Confirmed (€500)', `1 SOLAR-26 debt token minted to your whitelisted wallet. New annual 5.5% coupon claim: €${myCoupon.toFixed(2)}/yr.`, 'success');
+        }
+
+        function reportCompromisedWallet() {
+            if (walletRecovered) {
+                showToast('Wallet Already Reissued', 'Your holdings are already secured in backup wallet 0x99E4...4F1A.', 'info');
+                return;
+            }
+            document.getElementById('complianceAlertBadge').classList.remove('hidden');
+            document.getElementById('walletStatusTag').innerText = 'Recovery Requested';
+            document.getElementById('walletStatusTag').className = 'text-amber-400 font-semibold';
+            appendAuditLog('RecoveryTicketFiled', 'text-amber-400', `Investor 0x71C8...9A2B submitted identity verification for lost key recovery.`);
+            showToast('Recovery Ticket Sent to Compliance', 'Switch to Tab 3 (AI Risk & Compliance Console) to execute the atomic Freeze, Wipe & Reissue.', 'warning');
+        }
+
+        function initOracleChart() {
+            const ctx = document.getElementById('oracleTelemetryChart').getContext('2d');
+            oracleChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Day -6', 'Day -5', 'Day -4', 'Day -3', 'Day -2', 'Yesterday', 'Today'],
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'IoT Smart Meter Output (MWh)',
+                            data: [6.80, 7.10, 6.45, 7.30, 6.95, 7.05, 7.15],
+                            backgroundColor: 'rgba(56, 189, 248, 0.75)',
+                            borderRadius: 6,
+                            yAxisID: 'y'
+                        },
+                        {
+                            type: 'line',
+                            label: 'Daily PPA Cash Flow (€ @ €75/MWh)',
+                            data: [510.0, 532.5, 483.75, 547.5, 521.25, 528.75, 536.25],
+                            borderColor: '#10b981',
+                            backgroundColor: '#10b981',
+                            borderWidth: 2.5,
+                            tension: 0.25,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8 } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.35)' }, ticks: { color: '#94a3b8' } },
+                        y: {
+                            position: 'left',
+                            suggestedMin: 4,
+                            suggestedMax: 9,
+                            title: { display: true, text: 'Daily Output (MWh)', color: '#38bdf8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.35)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y1: {
+                            position: 'right',
+                            suggestedMin: 300,
+                            suggestedMax: 700,
+                            title: { display: true, text: 'PPA Revenue (€)', color: '#10b981' },
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#94a3b8', callback: (v) => '€' + v }
+                        }
+                    }
+                }
+            });
+        }
+
+        function simulateOracleFeed() {
+            oracleRound += 1;
+            const newMwh = +(6.5 + Math.random() * 1.2).toFixed(2);
+            const newRev = +(newMwh * 75).toFixed(2);
+            ytdOcfPool += Math.round(newRev);
+
+            document.getElementById('oracleRoundId').innerText = `#${oracleRound}`;
+            document.getElementById('oracleDailyMwh').innerText = `${newMwh} MWh`;
+            document.getElementById('oracleDailyRev').innerText = `+€${newRev.toFixed(2)}`;
+            document.getElementById('oracleYtdPool').innerText = `€${ytdOcfPool.toLocaleString('en-US')} / €110,000 req.`;
+
+            oracleChart.data.labels.shift();
+            oracleChart.data.labels.push(`Round #${oracleRound}`);
+            oracleChart.data.datasets[0].data.shift();
+            oracleChart.data.datasets[0].data.push(newMwh);
+            oracleChart.data.datasets[1].data.shift();
+            oracleChart.data.datasets[1].data.push(newRev);
+            oracleChart.update();
+
+            appendAuditLog('OracleDataUpdated', 'text-sky-400', `AggregatorV3Interface round #${oracleRound}: ${newMwh} MWh verified (+€${newRev} locked in Coupon Pool; reconciled vs. Creos Luxembourg S.A. & ILR).`);
+            showToast('Chainlink Oracle & Creos Synced', `Smarty IoT Meter reported ${newMwh} MWh. Cross-checked against Creos Luxembourg S.A. grid billing; €${newRev.toFixed(2)} locked in Coupon Pool.`, 'info');
+        }
+
+        function initFinancialChart() {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            financialChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'Operating Cash Flow (€)',
+                            data: [],
+                            backgroundColor: 'rgba(56, 189, 248, 0.78)',
+                            borderRadius: 4,
+                            yAxisID: 'y',
+                            order: 3
+                        },
+                        {
+                            type: 'line',
+                            label: 'DSCR (x)',
+                            data: [],
+                            borderColor: '#10b981',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#10b981',
+                            pointRadius: 4,
+                            tension: 0.1,
+                            yAxisID: 'y1',
+                            order: 2
+                        },
+                        {
+                            type: 'line',
+                            label: 'Default Threshold (1.00x)',
+                            data: [],
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            yAxisID: 'y1',
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    color: '#94a3b8',
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 12 } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    let val = context.parsed.y;
+                                    if (label.includes('€')) {
+                                        return `${label}: €${val.toLocaleString('en-US', {maximumFractionDigits: 0})}`;
+                                    } else {
+                                        return `${label}: ${val.toFixed(2)}${label.includes('DSCR') || label.includes('Threshold') ? 'x' : ''}`;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.45)' }, ticks: { color: '#94a3b8' } },
+                        y: {
+                            type: 'linear', position: 'left',
+                            suggestedMin: 0,
+                            suggestedMax: 220000,
+                            title: { display: true, text: 'Annual Cash Flow (€)', color: '#94a3b8', font: { weight: 'bold' } },
+                            grid: { color: 'rgba(51, 65, 85, 0.45)' },
+                            ticks: { color: '#94a3b8', callback: (val) => '€' + (val/1000) + 'k' }
+                        },
+                        y1: {
+                            type: 'linear', position: 'right',
+                            suggestedMin: 0,
+                            suggestedMax: 2.2,
+                            title: { display: true, text: 'DSCR Ratio (x)', color: '#94a3b8', font: { weight: 'bold' } },
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function applySimulatorPreset(preset) {
+            const radios = document.getElementsByName('structure');
+            if (preset === 'baseline') {
+                radios[0].checked = true;
+                document.getElementById('yieldInput').value = 2500;
+                document.getElementById('ppaInput').value = 75;
+                document.getElementById('interestInput').value = 5.5;
+                showToast('Preset 1: Baseline P50 Grid PPA (€75/MWh)', '2,500 MWh × €75/MWh − €40k OpEx = €147,500 OCF vs €110,000 Interest → 1.34x DSCR & €2,000,230 Year-10 Backing (100.01% Coverage).', 'success');
+            } else if (preset === 'amortizingFlaw') {
+                radios[1].checked = true;
+                document.getElementById('yieldInput').value = 2500;
+                document.getElementById('ppaInput').value = 75;
+                document.getElementById('interestInput').value = 5.5;
+                showToast('Preset 2: Traditional 10-Yr Amortising Flaw', 'Forcing €2.0M principal amortisation into 10 years spikes debt service to €265,346/yr → 0.55x Default!', 'danger');
+            } else if (preset === 'p90Downside') {
+                radios[0].checked = true;
+                document.getElementById('yieldInput').value = 2000;
+                document.getElementById('ppaInput').value = 75;
+                document.getElementById('interestInput').value = 5.5;
+                showToast('Preset 3: Severe P90 Weather Shock (-20% Yield)', 'Even at 2,000 MWh output, €110,000 OCF still covers 100% of the €110,000 interest coupon (1.00x Breakeven DSCR).', 'warning');
+            } else if (preset === 'ciDirectPpa') {
+                radios[0].checked = true;
+                document.getElementById('yieldInput').value = 2500;
+                document.getElementById('ppaInput').value = 95;
+                document.getElementById('interestInput').value = 5.5;
+                showToast('Preset 4: Direct C&I Corporate PPA (€95/MWh)', 'Behind-the-meter C&I rooftop PPA in Luxembourg boosts Net OCF to €197,500/yr → 1.80x Strong DSCR (+€87.5k/yr buffer).', 'info');
+            } else if (preset === 'ppnSweep') {
+                radios[2].checked = true;
+                document.getElementById('yieldInput').value = 2500;
+                document.getElementById('ppaInput').value = 75;
+                document.getElementById('interestInput').value = 5.5;
+                showToast('Preset 5: Profit-Participating Note (100% Sweep)', '100% cash sweep retires €2.0M principal over 25.6 years, locking up retail capital for over two decades.', 'info');
+            }
+            updateFinancialSimulator();
+        }
+
+        function updateFinancialSimulator() {
+            const structure = document.querySelector('input[name="structure"]:checked').value;
+            const yieldVal = parseFloat(document.getElementById('yieldInput').value);
+            const ppaVal = parseFloat(document.getElementById('ppaInput').value);
+            const interestRate = parseFloat(document.getElementById('interestInput').value);
+
+            document.getElementById('yieldLabel').innerText = `${yieldVal} MWh`;
+            document.getElementById('ppaLabel').innerText = `€${ppaVal} / MWh`;
+            document.getElementById('interestLabel').innerText = `${interestRate.toFixed(1)}%`;
+            document.getElementById('interestTitle').innerText = structure === 'ppn' ? 'Target Return Rate' : 'Coupon Interest Rate';
+
+            const grossRev = yieldVal * ppaVal;
+            const ocf = grossRev - OPEX;
+            const r = interestRate / 100;
+            const isPPN = structure === 'ppn';
+
+            document.getElementById('ocfValDisplay').innerText = formatCurrency(ocf);
+            document.getElementById('ocfFormulaSub').innerText = `Gross Rev (${formatCurrency(grossRev)}) − Fixed OpEx (€40,000)`;
+
+            let debtService = 0;
+            let dscr = 0;
+            let payoffYear = null;
+            let chartLabels = [];
+            let ocfData = [];
+            let metricData = [];
+            let targetData = [];
+
+            const card = document.getElementById('metricCard');
+            const valDisplay = document.getElementById('metricValDisplay');
+            const subtitle = document.getElementById('metricSubtitle');
+            const takeaway = document.getElementById('chartDynamicTakeaway');
+
+            const npvCard = document.getElementById('npvCard');
+            const npvValDisplay = document.getElementById('npvValDisplay');
+            const npvSubtitle = document.getElementById('npvSubtitle');
+
+            if (structure === 'bullet' || structure === 'amortizing') {
+                if (structure === 'bullet') {
+                    debtService = PRINCIPAL * r;
+                    dscr = debtService > 0 ? ocf / debtService : 0;
+                } else {
+                    if (Math.abs(interestRate - 5.5) < 0.001) {
+                        debtService = 265346;
+                    } else {
+                        debtService = r === 0 ? PRINCIPAL / 10 : (PRINCIPAL * r * Math.pow(1 + r, 10)) / (Math.pow(1 + r, 10) - 1);
+                    }
+                    dscr = debtService > 0 ? Math.floor((ocf / debtService) * 100) / 100 : 0;
+                }
+
+                for (let i = 1; i <= 10; i++) {
+                    chartLabels.push(`Year ${i}`);
+                    ocfData.push(ocf);
+                    metricData.push(dscr);
+                    targetData.push(1.0);
+                }
+
+                document.getElementById('debtValDisplay').innerText = formatCurrency(debtService);
+                document.getElementById('debtSubtitle').innerText = structure === 'bullet'
+                    ? `Annual Interest Only (${interestRate.toFixed(1)}% on €2.0M)`
+                    : `Constant Principal & Interest PMT (10-Yr)`;
+                document.getElementById('metricTitle').innerText = 'Debt Service Coverage (DSCR)';
+                valDisplay.innerText = `${dscr.toFixed(2)}x`;
+
+                // Calculate 20-year Residual NPV (Years 11-30 on 30-Yr Design Life) at 6.50% WACC
+                // Post-maturity Years 11-30 evaluated at P50 steady-state yield (2,500 MWh) & selected PPA tariff
+                const postMaturityOcf = Math.max(0, 2500 * ppaVal - OPEX);
+                const residualNpv20 = postMaturityOcf * PV_FACTOR_20YR_65;
+                const cashBuffer10Yr = structure === 'bullet' ? Math.max(0, ocf - debtService) * 10 : 0;
+                const totalBacking = residualNpv20 + cashBuffer10Yr;
+                const coveragePct = (totalBacking / PRINCIPAL) * 100;
+
+                if (structure === 'bullet') {
+                    npvValDisplay.innerText = formatCurrency(totalBacking);
+                    npvSubtitle.innerText = `${formatCurrency(residualNpv20)} NPV (Yrs 11–30) + ${formatCurrency(cashBuffer10Yr)} Cash (${coveragePct.toFixed(2)}%)`;
+                    if (totalBacking >= PRINCIPAL) {
+                        npvCard.className = 'bg-slate-900 border border-sky-500/40 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                        npvValDisplay.className = 'mt-3 text-3xl font-black text-emerald-400';
+                    } else {
+                        npvCard.className = 'bg-amber-950/20 border border-amber-500/40 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                        npvValDisplay.className = 'mt-3 text-3xl font-black text-amber-400';
+                    }
+                } else {
+                    npvValDisplay.innerText = 'Default Yr 1';
+                    npvValDisplay.className = 'mt-3 text-3xl font-black text-red-500';
+                    npvSubtitle.innerText = `−${formatCurrency(debtService - ocf)}/yr Cash Deficit vs PMT`;
+                    npvCard.className = 'bg-red-950/30 border border-red-500/50 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                }
+
+                if (dscr < 1.0) {
+                    card.className = 'bg-red-950/30 border border-red-500/60 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                    valDisplay.className = 'mt-3 text-3xl font-black text-red-500';
+                    subtitle.innerText = 'CRITICAL: Structural Default (< 1.00x Cash Shortage)';
+                    subtitle.className = 'mt-2 text-xs font-semibold text-red-400';
+                    takeaway.innerText = `WARNING: Annual Debt Service (${formatCurrency(debtService)}) exceeds OCF (${formatCurrency(ocf)}) by ${formatCurrency(debtService - ocf)}/yr, causing immediate default.`;
+                } else if (dscr <= 1.2) {
+                    card.className = 'bg-amber-950/30 border border-amber-500/60 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                    valDisplay.className = 'mt-3 text-3xl font-black text-amber-400';
+                    subtitle.innerText = 'BREAKEVEN / TIGHT: Coupons Covered (1.00x–1.20x)';
+                    subtitle.className = 'mt-2 text-xs font-semibold text-amber-300';
+                    takeaway.innerText = `Downside Resilience: OCF (${formatCurrency(ocf)}) covers 100% of required debt service (${formatCurrency(debtService)}) with zero principal default.`;
+                } else {
+                    card.className = 'bg-slate-900 border border-emerald-500/40 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                    valDisplay.className = 'mt-3 text-3xl font-black text-emerald-400';
+                    subtitle.innerText = 'HEALTHY: Strong Institutional Coverage (> 1.20x)';
+                    subtitle.className = 'mt-2 text-xs font-semibold text-emerald-400/90';
+                    takeaway.innerText = `Healthy Buffer: ${dscr.toFixed(2)}x DSCR (+${formatCurrency(ocf - debtService)}/yr buffer) + ${formatCurrency(residualNpv20)} Yr-10 Residual NPV (Yrs 11–30) = ${formatCurrency(totalBacking)} (${coveragePct.toFixed(2)}% principal coverage).`;
+                }
+            } else {
+                let currentPrincipal = PRINCIPAL;
+                for (let i = 1; i <= 30; i++) {
+                    let interest = currentPrincipal * r;
+                    let paydown = ocf - interest;
+                    chartLabels.push(`Y${i}`);
+                    ocfData.push(ocf);
+
+                    if (currentPrincipal <= 0) {
+                        metricData.push(0);
+                    } else if (paydown > 0 && paydown >= currentPrincipal) {
+                        let frac = currentPrincipal / paydown;
+                        if (!payoffYear) payoffYear = (i - 1) + frac;
+                        metricData.push(0);
+                        currentPrincipal = 0;
+                    } else {
+                        currentPrincipal -= paydown;
+                        metricData.push(currentPrincipal);
+                    }
+                }
+
+                document.getElementById('debtValDisplay').innerText = '100% Sweep';
+                document.getElementById('debtSubtitle').innerText = 'All Positive OCF Applied to Interest + Principal';
+                document.getElementById('metricTitle').innerText = 'Years to Full Principal Payoff';
+
+                npvValDisplay.innerText = payoffYear ? `${payoffYear.toFixed(1)} Yrs` : '> 30 Yrs';
+                npvValDisplay.className = 'mt-3 text-3xl font-black text-indigo-400';
+                npvSubtitle.innerText = 'No Year-10 Bullet Exit (Multi-Decade Lockup)';
+                npvCard.className = 'bg-slate-900 border border-indigo-500/40 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+
+                if (payoffYear) {
+                    valDisplay.innerText = `${payoffYear.toFixed(1)} yrs`;
+                    card.className = 'bg-slate-900 border border-indigo-500/40 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                    valDisplay.className = 'mt-3 text-3xl font-black text-indigo-400';
+                    subtitle.innerText = 'ILLIQUID LOCKUP: Retires Principal Over 25.6 Yrs';
+                    subtitle.className = 'mt-2 text-xs font-semibold text-indigo-300';
+                    takeaway.innerText = `100% Cash Sweep retires the €2.0M bond in ${payoffYear.toFixed(1)} years, locking up retail capital for over two decades.`;
+                } else {
+                    valDisplay.innerText = '> 30 yrs';
+                    card.className = 'bg-red-950/30 border border-red-500/60 rounded-2xl p-5 shadow-lg transition-colors duration-300';
+                    valDisplay.className = 'mt-3 text-3xl font-black text-red-500';
+                    subtitle.innerText = 'WARNING: Exceeds 30-Year Solar Lifecycle';
+                    subtitle.className = 'mt-2 text-xs font-semibold text-red-400';
+                }
+            }
+
+            if (financialChart) {
+                financialChart.data.labels = chartLabels;
+                financialChart.data.datasets[0].data = ocfData;
+                financialChart.data.datasets[1].data = metricData;
+
+                if (isPPN) {
+                    financialChart.data.datasets[1].label = 'Remaining Principal Balance (€)';
+                    financialChart.data.datasets[1].borderColor = '#818cf8';
+                    financialChart.data.datasets[1].pointBackgroundColor = '#818cf8';
+                    financialChart.options.scales.y1.title.text = 'Outstanding Principal (€)';
+                    financialChart.options.scales.y1.suggestedMax = 2000000;
+                    financialChart.data.datasets[2].data = [];
+                } else {
+                    financialChart.data.datasets[1].label = 'DSCR (x)';
+                    let color = dscr < 1.0 ? '#ef4444' : (dscr <= 1.2 ? '#f59e0b' : '#10b981');
+                    financialChart.data.datasets[1].borderColor = color;
+                    financialChart.data.datasets[1].pointBackgroundColor = color;
+                    financialChart.options.scales.y1.title.text = 'DSCR Ratio (x)';
+                    financialChart.options.scales.y1.suggestedMax = 2.2;
+                    financialChart.data.datasets[2].data = targetData;
+                }
+                financialChart.update();
+            }
+        }
+
+        function initAiChart() {
+            const ctx = document.getElementById('aiIsolationChart').getContext('2d');
+            aiChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Inverter #1 (500kW)', 'Inverter #2 (500kW)', 'Inverter #3 (500kW)', 'Inverter #4 (500kW)', 'Inverter #5 (500kW)'],
+                    datasets: [
+                        {
+                            label: 'Measured Performance Ratio (PR %)',
+                            data: [79.4, 78.9, 79.2, 79.5, 79.0],
+                            backgroundColor: [
+                                'rgba(16, 185, 129, 0.75)',
+                                'rgba(16, 185, 129, 0.75)',
+                                'rgba(16, 185, 129, 0.75)',
+                                'rgba(16, 185, 129, 0.75)',
+                                'rgba(16, 185, 129, 0.75)'
+                            ],
+                            borderRadius: 6
+                        },
+                        {
+                            type: 'line',
+                            label: 'Isolation Forest Anomaly Threshold (72.0%)',
+                            data: [72.0, 72.0, 72.0, 72.0, 72.0],
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', usePointStyle: true, boxWidth: 8 } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(51, 65, 85, 0.35)' }, ticks: { color: '#94a3b8' } },
+                        y: {
+                            min: 50,
+                            max: 90,
+                            title: { display: true, text: 'Performance Ratio (PR %)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.35)' },
+                            ticks: { color: '#94a3b8', callback: (v) => v + '%' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function injectAiAnomaly() {
+            aiChart.data.datasets[0].data[2] = 63.8;
+            aiChart.data.datasets[0].backgroundColor[2] = 'rgba(239, 68, 68, 0.85)';
+            aiChart.update();
+
+            const alertBox = document.getElementById('aiAlertBox');
+            alertBox.className = 'mt-4 bg-red-950/40 border border-red-500/60 rounded-xl p-4 transition-all';
+            document.getElementById('aiAlertTitle').innerText = 'ANOMALY DETECTED: INVERTER #3';
+            document.getElementById('aiAlertTitle').className = 'text-xs font-bold uppercase text-red-400';
+            document.getElementById('aiAnomalyScore').innerText = 'Score: 0.84 (HIGH)';
+            document.getElementById('aiAnomalyScore').className = 'font-mono-code text-xs font-bold text-red-400';
+            document.getElementById('aiAlertDesc').innerHTML = 'Isolation Forest detected multi-dimensional divergence (<strong class="text-white">PR dropped to 63.8%</strong> under 810 W/m² irradiance). Unmitigated fault projects a <strong class="text-red-300">-300 MWh (-€22.5k) loss</strong>, dropping OCF to €125.0k and <strong class="text-red-400">DSCR to 1.14x (breaching the 1.20x institutional covenant)</strong>.';
+
+            document.getElementById('headerAiBadge').className = 'flex items-center gap-2 bg-red-950/80 border border-red-500/50 px-3 py-1.5 rounded-lg text-xs';
+            document.getElementById('headerAiDot').className = 'w-2 h-2 rounded-full bg-red-500 animate-ping';
+            document.getElementById('headerAiText').innerText = 'ANOMALY (1.14x RISK)';
+            document.getElementById('headerAiText').className = 'font-mono-code font-bold text-red-400';
+
+            document.getElementById('injectAnomalyBtn').classList.add('hidden');
+            document.getElementById('triageAnomalyBtn').classList.remove('hidden');
+
+            appendAuditLog('IsolationForestAlert', 'text-red-400', 'Unsupervised AI flagged Inverter #3 degradation (PR 63.8%, Score 0.84; unmitigated -300 MWh loss threatens 1.14x DSCR breach).');
+            showToast('AI Predictive Maintenance Alert', 'Isolation Forest flagged Inverter #3 fault (PR 63.8%). Unmitigated -300 MWh (-€22.5k) loss drops DSCR to 1.14x.', 'danger');
+        }
+
+        function triageAiAnomaly() {
+            aiChart.data.datasets[0].data[2] = 79.2;
+            aiChart.data.datasets[0].backgroundColor[2] = 'rgba(16, 185, 129, 0.75)';
+            aiChart.update();
+
+            const alertBox = document.getElementById('aiAlertBox');
+            alertBox.className = 'mt-4 bg-emerald-950/30 border border-emerald-500/30 rounded-xl p-4 transition-all';
+            document.getElementById('aiAlertTitle').innerText = '48H TRIAGE COMPLETE & O&M DISPATCHED';
+            document.getElementById('aiAlertTitle').className = 'text-xs font-bold uppercase text-emerald-400';
+            document.getElementById('aiAnomalyScore').innerText = 'Score: 0.11 (NOMINAL)';
+            document.getElementById('aiAnomalyScore').className = 'font-mono-code text-xs font-bold text-emerald-300';
+            document.getElementById('aiAlertDesc').innerHTML = 'Compliance Officer dispatched O&M crew within 48h to replace faulty MPPT connector on Inverter #3, saving <strong class="text-emerald-300">+€20.6k</strong> in revenue and <strong class="text-white">preserving DSCR at 1.32x (above 1.20x covenant; PR restored to 79.2%)</strong>.';
+
+            document.getElementById('headerAiBadge').className = 'flex items-center gap-2 bg-slate-900/90 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs';
+            document.getElementById('headerAiDot').className = 'w-2 h-2 rounded-full bg-emerald-400';
+            document.getElementById('headerAiText').innerText = 'PROTECTED (1.32x→1.34x)';
+            document.getElementById('headerAiText').className = 'font-mono-code font-bold text-emerald-400';
+
+            document.getElementById('triageAnomalyBtn').classList.add('hidden');
+            document.getElementById('injectAnomalyBtn').classList.remove('hidden');
+
+            appendAuditLog('AlertTriagedByOfficer', 'text-emerald-400', 'Human-in-the-loop 48h O&M dispatch completed for Inverter #3 (+€20.6k saved; €145.6k OCF / 1.32x DSCR preserved).');
+            showToast('48h Human-in-the-Loop Triage Complete', 'O&M crew restored Inverter #3 within 48h, saving +€20.6k and protecting the 1.32x DSCR above the 1.20x covenant.', 'success');
+        }
+
+        function approveKycInvestor(rowId, walletAddr, amount) {
+            const row = document.getElementById(`kycRow-${rowId}`);
+            row.innerHTML = `
+                <div class="flex items-center justify-between w-full py-1">
+                    <span class="text-xs text-slate-300 font-mono-code">${walletAddr} (€${amount})</span>
+                    <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-400 rounded">✓ WHITELISTED (EVM &amp; AMP)</span>
+                </div>
+            `;
+            whitelistedCount += 1;
+            document.getElementById('totalWhitelistedCount').innerText = `${whitelistedCount} Verified`;
+            appendAuditLog('KYCWhitelisted', 'text-sky-400', `COMPLIANCE_ROLE executed whitelistAddress(${walletAddr}) on UUPS Proxy & Liquid AMP following off-chain KYC check.`);
+            showToast('KYC Approved & Whitelisted', `Address ${walletAddr} added to UUPS smart contract & Blockstream AMP whitelist.`, 'success');
+        }
+
+        function executeFreezeWipeReissue() {
+            if (walletRecovered) {
+                showToast('Already Executed', 'Compromised tokens were already wiped and reissued to 0x99E4...4F1A.', 'info');
+                return;
+            }
+            walletRecovered = true;
+            const btn = document.getElementById('executeRecoveryBtn');
+            btn.innerText = '✓ Frozen, Wiped & Reissued to 0x99E4...4F1A';
+            btn.className = 'mt-4 w-full py-2.5 px-4 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold text-xs cursor-default';
+
+            document.getElementById('recoveryTicketBadge').innerText = '0 Pending';
+            document.getElementById('recoveryTicketBadge').className = 'text-[11px] text-emerald-400 font-semibold';
+
+            document.getElementById('investorWalletAddr').innerText = '0x99E4...4F1A (Recovered Backup)';
+            document.getElementById('walletStatusTag').innerText = 'Restored & Secured';
+            document.getElementById('walletStatusTag').className = 'text-emerald-400 font-semibold';
+
+            appendAuditLog('TokensWipedAndReissued', 'text-amber-400', `COMPLIANCE_ROLE froze 0x71C8...9A2B, burned ${myTokens} compromised tokens, and reissued ${myTokens} SOLAR-26 tokens to verified wallet 0x99E4...4F1A.`);
+            showToast('Atomic Token Recovery Complete', `Compromised address 0x71C8...9A2B frozen & wiped. ${myTokens} SOLAR-26 tokens reissued to verified backup wallet 0x99E4...4F1A.`, 'success');
+        }
+
+        function toggleEmergencyPause() {
+            isContractPaused = !isContractPaused;
+            const banner = document.getElementById('globalPauseBanner');
+            const headerBadge = document.getElementById('headerContractBadge');
+            const headerDot = document.getElementById('headerContractDot');
+            const headerText = document.getElementById('headerContractText');
+            const statePill = document.getElementById('pauseStatePill');
+            const stateSub = document.getElementById('pauseStateSubtext');
+            const btn = document.getElementById('pauseToggleBtn');
+
+            if (isContractPaused) {
+                banner.classList.remove('hidden');
+                headerBadge.className = 'flex items-center gap-2 bg-red-950/90 border border-red-500/50 px-3 py-1.5 rounded-lg text-xs';
+                headerDot.className = 'w-2 h-2 rounded-full bg-red-500 animate-ping';
+                headerText.innerText = 'PAUSED';
+                headerText.className = 'font-mono-code font-bold text-red-400';
+
+                statePill.innerText = 'PAUSED';
+                statePill.className = 'px-2.5 py-1 rounded-md font-mono-code text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/40';
+                stateSub.innerText = 'Circuit Breaker Active (All Transfers Halted)';
+                stateSub.className = 'text-[11px] text-red-400 mt-0.5';
+
+                btn.innerHTML = '<span>Resume Normal Operations (unpause())</span>';
+                btn.className = 'mt-4 w-full py-2.5 px-4 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-400 font-bold text-xs transition-all flex items-center justify-center gap-2';
+
+                appendAuditLog('Paused', 'text-red-400', 'PAUSER_ROLE triggered emergency circuit breaker. All secondary token transfers halted.');
+                showToast('Emergency Circuit Breaker Activated', 'PAUSER_ROLE halted all secondary market transfers on the UUPS smart contract.', 'danger');
+            } else {
+                banner.classList.add('hidden');
+                headerBadge.className = 'flex items-center gap-2 bg-slate-900/90 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs';
+                headerDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse-slow';
+                headerText.innerText = 'ACTIVE';
+                headerText.className = 'font-mono-code font-bold text-emerald-400';
+
+                statePill.innerText = 'UNPAUSED';
+                statePill.className = 'px-2.5 py-1 rounded-md font-mono-code text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+                stateSub.innerText = 'Normal Operation (Transfers Enabled)';
+                stateSub.className = 'text-[11px] text-emerald-400 mt-0.5';
+
+                btn.innerHTML = '<span>Trigger Emergency Circuit Breaker (pause())</span>';
+                btn.className = 'mt-4 w-full py-2.5 px-4 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/40 font-bold text-xs transition-all flex items-center justify-center gap-2';
+
+                appendAuditLog('Unpaused', 'text-emerald-400', 'PAUSER_ROLE lifted circuit breaker after Oracle verification. Normal transfers resumed.');
+                showToast('Contract Resumed (UNPAUSED)', 'Secondary market transfers and automated distributions are active again.', 'success');
+            }
+        }
+
+        window.onload = function() {
+            initOracleChart();
+            initFinancialChart();
+            initAiChart();
+            updateFinancialSimulator();
+        };
+    </script>
+</body>
+</html>
