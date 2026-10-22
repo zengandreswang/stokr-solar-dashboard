@@ -10,6 +10,7 @@
 
 - **Live Interactive Web2 Portal & Stress-Testing Simulator:**  
   [https://zengandreswang.github.io/stokr-solar-dashboard/](https://zengandreswang.github.io/stokr-solar-dashboard/)
+  [https://sepolia.etherscan.io/address/0xa728BE19dcD714030FAb00C5ca9d0c6350bEBDE1#readProxyContract](https://sepolia.etherscan.io/address/0xa728BE19dcD714030FAb00C5ca9d0c6350bEBDE1#readProxyContract)
 - **3-Page Institutional Proposal (`STOKR Proposal - Tokenised Solar Debt Instrument.pdf`):**  
   End-to-end commercial and technical proposal covering verifiable European precedents, hybrid on/off-chain oracle architecture, cognitive-fairness retail disclosures, a 12-month implementation roadmap, and Luxembourg legal boundaries.
 - **6-Page Technical & Financial Modeling Appendix (`Appendix.pdf`):**  
